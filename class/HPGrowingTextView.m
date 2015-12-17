@@ -28,6 +28,12 @@
 #import "HPGrowingTextView.h"
 #import "HPTextViewInternal.h"
 
+@interface HPGrowingTextView ()
+
+@property (nonatomic, assign) BOOL changingText;
+
+@end
+
 @interface HPGrowingTextView(private)
 -(void)commonInitialiser;
 -(void)resizeTextView:(NSInteger)newSizeH;
@@ -425,7 +431,9 @@
 
 -(void)setText:(NSString *)newText
 {
+    self.changingText = YES;
     internalTextView.text = newText;
+    self.changingText = NO;
     
     // include this line to analyze the height of the textview.
     // fix from Ankit Thakur
@@ -630,7 +638,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range
  replacementText:(NSString *)atext {
-	
+   if (self.changingText) return NO;
+
 	//weird 1 pixel bug when clicking backspace when textView is empty
 	if(![textView hasText] && [atext isEqualToString:@""]) return NO;
 	
